@@ -1,0 +1,29 @@
+{
+  "name": "td-edit",
+  "version": "0.1.0",
+  "description": "Tripledollar rich editor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "build.js",
+    "demo": "node_modules/tripledollar/bin/td.js --start --open demo.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steenk/td-edit.git"
+  },
+  "keywords": [
+    "tripledollar",
+    "rich",
+    "editor"
+  ],
+  "author": "steenk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/steenk/td-edit/issues"
+  },
+  "homepage": "https://github.com/steenk/td-edit#readme",
+  "dependencies": {
+    "tripledollar": "^1.5.7"
+  }
+}
