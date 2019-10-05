@@ -25,9 +25,9 @@ function init (conf) {
   });
   let textarea = $$$.queryAll('.td-edit-textarea');
   Array.from(textarea).forEach((ta) => {
-    ta.id = 'steen';
     ta.selection = {}
-    $$$(ta).evt('change', handleChange, ta);
+    let tb = ta.parentElement.querySelector('.td-edit-toolbar')
+    $$$(ta).evt('change', handleChange, ta, tb);
     ta.evt('keyup', (evt) => {
       ta.dispatchEvent(changeEvent);
     })
@@ -37,22 +37,40 @@ function init (conf) {
   });
 }
 
+function resetToolbar (tb) {
+  let all = tb.queryAll('.active');
+  Array.from(all).forEach((but) => {
+    but.classList.remove('active');
+  })
+}
+
 function handleAction (evt, id) {
   if (evt.target.tagName === 'I') {
     let t = evt.target;
     let textarea = document.getElementById(id).parentElement.querySelector('.td-edit-textarea');
     let title = t.getAttribute('title');
-    action.run(textarea, title);
+    if (t.classList.contains('active')) {
+      t.classList.remove('active');
+      action.remove(textarea, title);
+    } else {
+      action.run(textarea, title);
+    }
   }
 }
 
-function handleChange (evt, ta) {
+function handleChange (evt, ta, tb) {
+  resetToolbar(tb);
   let sel = document.getSelection();
   for (let key of ['anchorNode', 'focusNode', 'anchorOffset', 'focusOffset', 'isCollapsed', 'rangeCount', 'type']) {
     ta.selection[key] = sel[key];
   }
-  if (!sel.type === 'Caret') {
-
+  let parent = sel.anchorNode.parentNode;
+  if (!parent.classList.contains('td-edit-textarea')) {
+    let fa = action.mapToFA(parent.tagName);
+    let but = tb.querySelector(fa);
+    if (but) {
+      but.classList.add('active')
+    }
   }
 }
 

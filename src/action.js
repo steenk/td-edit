@@ -4,18 +4,22 @@ let knownAction = {
   bold: function (content) {
     return ['strong', content];
   },
+  'STRONG': 'bold',
   italic: function (content) {
     return ['em', content];
   },
+  'EM': 'italic',
   underline: function (content) {
     return ['mark', content];
   },
+  'MARK': 'underline',
   cite: function (content) {
     return ['cite', content];
   },
   paragraph: function (content) {
     return ['p', content];
   },
+  'P': 'paragraph',
   code: function (content) {
     return ['code', content];
   },
@@ -46,10 +50,24 @@ let knownAction = {
 
 }
 
+function mapToFA (tag) {
+	let name = knownAction[tag];
+	if (name) {
+		return '.fa-' + name;
+	}
+}
+
 let correction = {
 	quote: 'quote-right'
 }
 
+function remove (textarea, title) {
+	let sel = document.getSelection();
+	let elem = textarea.selection.anchorNode.parentElement;
+	if (knownAction[elem.tagName] && knownAction[elem.tagName] === title) {
+		elem.parentNode.replaceChild(textarea.selection.anchorNode, elem);
+	}
+}
 
 function run (textarea, title) {
   title = correction[title] || title;
@@ -57,22 +75,21 @@ function run (textarea, title) {
     
     let sel = document.getSelection();
     let cur = textarea.selection;
+    if (cur.focusNode.length < cur.focusOffset) return;
+
     sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
+
     let res = knownAction[title](sel.toString());
-    
+
     if (sel.rangeCount) {
         let range = sel.getRangeAt(0);
         range.deleteContents();
         range.insertNode($$$(res));
+        sel.empty();
     }
 
   }
 }
-
-/*
-documentFragment = range.cloneContents();
-document.body.appendChild(documentFragment);
-*/
 
 function check (tool) {
 	tool = correction[tool] || tool;
@@ -82,5 +99,5 @@ function check (tool) {
 	return 'angry';
 }
 
-export default { run, check }
+export default { run, check, mapToFA, remove }
 
