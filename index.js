@@ -7,7 +7,6 @@ $$$.appendToDoc(
 	['div.td-rich-editor']
 )
 .then(() => {
-  tdedit.init();
-});
-
+	tdedit.init()
+})
 

@@ -1,11 +1,10 @@
 {
   "name": "td-edit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tripledollar rich editor.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "build.js",
     "demo": "node_modules/tripledollar/bin/td.js --start --open demo.html"
   },
   "repository": {
@@ -24,6 +23,13 @@
   },
   "homepage": "https://github.com/steenk/td-edit#readme",
   "dependencies": {
+    "@babel/polyfill": "^7.6.0",
     "tripledollar": "^1.5.7"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "babel-loader": "^8.0.6"
   }
 }

@@ -75,7 +75,7 @@ function run (textarea, title) {
     
     let sel = document.getSelection();
     let cur = textarea.selection;
-    if (cur.focusNode.length < cur.focusOffset) return;
+    if (!cur.focusNode || cur.focusNode.length < cur.focusOffset) return;
 
     sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
 
