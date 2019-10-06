@@ -71,23 +71,64 @@ function remove (textarea, title) {
 
 function run (textarea, title) {
   title = correction[title] || title;
+  console.log('run', textarea, title)
   if (knownAction[title]) {
     
     let sel = document.getSelection();
     let cur = textarea.selection;
+    console.log(cur.type)
     if (!cur.focusNode || cur.focusNode.length < cur.focusOffset) return;
-
     sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
 
-    let res = knownAction[title](sel.toString());
-
     if (sel.rangeCount) {
+    	console.log(sel.rangeCount)
         let range = sel.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode($$$(res));
-        sel.empty();
+        if (sel.type === 'Range') {
+        	let res = knownAction[title](sel.toString());
+        	range.deleteContents();
+        	range.insertNode($$$(res));
+        	sel.empty();
+        	return;
+        }
+        if (sel.type === 'Caret') {
+        	console.log(textarea.toolbarId)
+        }
     }
 
+  }
+}
+
+function hasStyle (node, style, styles) {
+	var has = false;
+	var elem = node.nodeType === 1 ? node : node.parentElement;
+	while (!elem.classList.contains('td-edit-textarea')) {
+		//console.log(knownAction[elem.tagName], 'vs', style)
+		if (knownAction[elem.tagName] === style) has = true;
+		elem = elem.parentNode;
+	}
+	if (styles[style] && !has) {
+		console.log(style + ' should be created');
+		let sel = document.getSelection();
+		let range = sel.getRangeAt(0);
+		let newNode = $$$(knownAction[style]('⃗'));
+		range.insertNode(newNode);
+		sel.selectAllChildren(newNode);
+	}
+	if (!styles[style] && has) {
+		console.log(style + ' should be removed')
+	}
+
+	return has;
+}
+
+function setStyle (textarea, styles) {
+	console.log(styles);
+	let sel = document.getSelection();
+  let cur = textarea.selection;
+  sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
+  for (let style in styles) {
+  	hasStyle(cur.anchorNode, style, styles);
+  	//console.log(style, hasStyle(cur.anchorNode, style, styles));
   }
 }
 
@@ -99,5 +140,5 @@ function check (tool) {
 	return 'angry';
 }
 
-export default { run, check, mapToFA, remove }
+export default { run, check, mapToFA, remove, setStyle }
 

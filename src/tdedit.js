@@ -1,7 +1,7 @@
 import $$$ from "./lib/tripledollar.mjs";
 import action from "./action.js";
 
-const version = '0.2.0';
+const version = '0.2.1';
 const changeEvent = new Event('change');
 
 function init (conf) {
@@ -27,6 +27,7 @@ function init (conf) {
   Array.from(textarea).forEach((ta) => {
     ta.selection = {}
     let tb = ta.parentElement.querySelector('.td-edit-toolbar')
+    ta.toolbarId = tb.id;
     $$$(ta).evt('change', handleChange, ta, tb);
     ta.evt('keyup', (evt) => {
       ta.dispatchEvent(changeEvent);
@@ -44,16 +45,31 @@ function resetToolbar (tb) {
   })
 }
 
+function selectedStyles (tb) {
+  let all = tb.queryAll('i');
+  let styles = {};
+  Array.from(all).forEach((but) => {
+    styles[but.getAttribute('title')] = but.classList.contains('active');
+  });
+  return styles;
+}
+
 function handleAction (evt, id) {
   if (evt.target.tagName === 'I') {
     let t = evt.target;
-    let textarea = document.getElementById(id).parentElement.querySelector('.td-edit-textarea');
+    let tb = document.getElementById(id);
+    let textarea = tb.parentElement.querySelector('.td-edit-textarea');
     let title = t.getAttribute('title');
     if (t.classList.contains('active')) {
       t.classList.remove('active');
       action.remove(textarea, title);
     } else {
-      action.run(textarea, title);
+      if (textarea.selection.type === 'Caret') {
+        t.classList.toggle('active');
+        action.setStyle(textarea, selectedStyles(tb))
+      } else if (textarea.selection.type === 'Range') {
+        action.run(textarea, title);
+      }
     }
   }
 }
@@ -61,6 +77,10 @@ function handleAction (evt, id) {
 function handleChange (evt, ta, tb) {
   resetToolbar(tb);
   let sel = document.getSelection();
+  if (!sel.anchorNode) {
+    console.log('no anchor', sel.type);
+    return;
+  }
   for (let key of ['anchorNode', 'focusNode', 'anchorOffset', 'focusOffset', 'isCollapsed', 'rangeCount', 'type']) {
     ta.selection[key] = sel[key];
   }
