@@ -1,64 +1,40 @@
 import $$$ from "./lib/tripledollar.mjs";
 
-let knownAction = {
-  bold: function (content) {
-    return ['strong', content];
-  },
-  'STRONG': 'bold',
-  italic: function (content) {
-    return ['em', content];
-  },
-  'EM': 'italic',
-  underline: function (content) {
-    return ['mark', content];
-  },
-  'MARK': 'underline',
-  cite: function (content) {
-    return ['cite', content];
-  },
-  paragraph: function (content) {
-    return ['p', content];
-  },
-  'P': 'paragraph',
-  code: function (content) {
-    return ['code', content];
-  },
-  'quote-right': function (content) {
-    return ['quote', content];
-  },
-  'heading.one': function (content) {
-  	return ['h1', content];
-  },
-  'heading.two': function (content) {
-  	return ['h2', content];
-  },
-  'heading.three': function (content) {
-  	return ['h3', content];
-  },
-  'heading.four': function (content) {
-  	return ['h4', content];
-  },
-  'heading.five': function (content) {
-  	return ['h5', content];
-  },
-  'heading.six': function (content) {
-  	return ['h6', content];
-  },
-  angry: function (content) {
-  	return content;
-  }
+function topTag (tdstring) {
+  let re = /^\s*\[\s*[\'\"](.+)[\'\"]/;
+  let found = re.exec(tdstring);
+  return (found[1] || '').toUpperCase();
+}
 
+function toolKey (classes) {
+  return (['i'].concat(classes.split(/\s/).filter(x => x !== 'active' && x))).join('.');
+}
+
+var knownAction;
+
+function create (conf) {
+  let actions = {};
+
+  conf.tools.forEach((tool) => {
+    let key = toolKey(tool.classes);
+    actions[key] = ($selection) => {
+      $selection = $selection || '';
+      return JSON.parse(tool.template.replace(/\$selection/g, "'" + $selection + "'").replace(/'/g, '"'));
+    }
+    actions[topTag(tool.template)] = key;
+  });
+  knownAction = actions;
+  return {
+    knownAction: actions
+  }
 }
 
 function mapToFA (tag) {
-	let name = knownAction[tag];
-	if (name) {
-		return '.fa-' + name;
-	}
+	return knownAction[tag];
 }
 
 let correction = {
-	quote: 'quote-right'
+	cite: 'quote-right'
 }
 
 function remove (textarea, title) {
@@ -71,17 +47,14 @@ function remove (textarea, title) {
 
 function run (textarea, title) {
   title = correction[title] || title;
-  console.log('run', textarea, title)
   if (knownAction[title]) {
     
     let sel = document.getSelection();
     let cur = textarea.selection;
-    console.log(cur.type)
     if (!cur.focusNode || cur.focusNode.length < cur.focusOffset) return;
     sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
 
     if (sel.rangeCount) {
-    	console.log(sel.rangeCount)
         let range = sel.getRangeAt(0);
         if (sel.type === 'Range') {
         	let res = knownAction[title](sel.toString());
@@ -110,7 +83,7 @@ function hasStyle (node, style, styles) {
 		console.log(style + ' should be created');
 		let sel = document.getSelection();
 		let range = sel.getRangeAt(0);
-		let newNode = $$$(knownAction[style]('⃗'));
+		let newNode = $$$(knownAction[style]('-'));
 		range.insertNode(newNode);
 		sel.selectAllChildren(newNode);
 	}
@@ -122,23 +95,20 @@ function hasStyle (node, style, styles) {
 }
 
 function setStyle (textarea, styles) {
-	console.log(styles);
 	let sel = document.getSelection();
   let cur = textarea.selection;
   sel.setBaseAndExtent(cur.anchorNode, cur.anchorOffset, cur.focusNode, cur.focusOffset);
   for (let style in styles) {
   	hasStyle(cur.anchorNode, style, styles);
-  	//console.log(style, hasStyle(cur.anchorNode, style, styles));
   }
 }
 
 function check (tool) {
-	tool = correction[tool] || tool;
 	if (knownAction[tool]) {
 		return tool;
 	}
 	return 'angry';
 }
 
-export default { run, check, mapToFA, remove, setStyle }
+export default { run, check, mapToFA, remove, setStyle, create, toolKey }
 
