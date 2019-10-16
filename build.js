@@ -39,11 +39,5 @@ fs.writeFile('dist/index.html', index, (err) => {
 	if (err) throw err;
 })
 
-if (!fs.existsSync('dist/webfonts')) {
-  exec('cp -r webfonts dist/webfonts', (err) => {
-	  if (err) throw err;
-  })
-}
-
 console.log('Built td-edit into "dist".');
 
