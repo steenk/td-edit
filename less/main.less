@@ -1,10 +1,9 @@
 /* main.less */
-@import "fontawesome";
-@import "solid";
-@import "brands";
+
+@import "icons";
 
 body {
-	padding: 30px;
+	padding: 0;
   background-color: lightgray;
 }
 
@@ -19,40 +18,57 @@ body {
 }
 
 .td-edit-toolbar {
-  min-height: 40px;
+  min-height: 36px;
+  padding-top: 12px;
   border-bottom: solid lightgray 1px;
   i {
     padding: 12px;
-    color: gray;
     cursor: pointer;
+    margin: 10px;
   }
   .active {
-    color: black;
+    background-color: rgba(0,0,0,0.1);
   }
+}
+
+.after-number {
+  position: relative;
+  font-size: 18px;
+  font-weight: bold;
+  left: 14px;
 }
 
 .one::after {
   content: "1";
+  .after-number;
 }
 
 .two::after {
   content: "2";
+  .after-number;
 }
 
 .three::after {
   content: "3";
+  .after-number;
 }
 
 .four::after {
   content: "4";
+  .after-number;
 }
 
 .five::after {
   content: "5";
+  .after-number;
 }
 
 .six::after {
   content: "6";
+  .after-number;
 }
 
-
+.td-button {
+  width: 24px;
+  height: 24px;
+}

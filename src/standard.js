@@ -2,37 +2,37 @@ export default {
   tools: [
     {
       title: 'Bold',
-      classes: "fas fa-bold",
+      classes: "td-button icon-bold",
       template: "['strong', $selection]"
     },
     {
       title: 'Italic',
-      classes: "fas fa-italic",
+      classes: "td-button icon-italic",
       template: "['em', $selection]"
     },
     {
       title: 'Mark',
-      classes: "fas fa-underline",
+      classes: "td-button icon-underline",
       template: "['mark', $selection]"
     },
     {
       title: 'Large heading',
-      classes: 'fas fa-heading one',
+      classes: 'td-button icon-heading one',
       template: "['h1', $selection]"
     },
     {
       title: 'Middle heading',
-      classes: 'fas fa-heading two',
+      classes: 'td-button icon-heading two',
       template: "['h2', $selection]"
     },
     {
       title: 'Small heading',
-      classes: 'fas fa-heading three',
+      classes: 'td-button icon-heading three',
       template: "['h3', $selection]"
     },
     {
       title: 'Code',
-      classes: 'fas fa-code',
+      classes: 'td-button icon-code',
       template: "['code', $selection]"
     }
   ]
